@@ -1,0 +1,39 @@
+<style>
+	.nyasec-panel { display: none; }
+</style>
+<div class="nyasec-panel show-ok">
+	<p class="tbmu mbm">喵玉口令已启用</p>
+	<button id="cancel_nyasec">点击停用</button>
+</div>
+<div class="nyasec-panel show-error">
+	<p class="tbmu mbm">输入手机号来申请口令密钥</p>
+	<input id="phonenum" /><button id="request_nyasec">申请</button>
+	<p id="request_message"></p>
+</div>
+<script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+<script>
+(function($) {
+
+$.get('plugin.php?id=nyasec:key&ac=check', function(data) {
+	$('.nyasec-panel').hide().filter('.show-' + data.result).show()
+}, 'json')
+
+$('#cancel_nyasec').click(function(e) {
+	$(e).attr('disabled', 'disabled')
+	$.get('plugin.php?id=nyasec:key&ac=cancel', function(data) {
+		$('.nyasec-panel').hide().filter('.show-error').show()
+		$(e).removeAttr('disabled')
+	}, 'json')
+})
+
+$('#request_nyasec').click(function(e) {
+	var phonenum = $('#phonenum').val();
+	$(e).attr('disabled', 'disabled')
+	$.get('plugin.php?id=nyasec:key&ac=request&phonenum='+phonenum, function(data) {
+		$('#request_message').text(data.result === 'ok' ? '申请成功，请在手机客户端上输入下载码，按照提示操作' : data.message)
+		$(e).removeAttr('disabled')
+	}, 'json')
+})
+
+})(jQuery.noConflict())
+</script>
