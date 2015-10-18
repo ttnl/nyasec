@@ -6,6 +6,10 @@ require_once DISCUZ_ROOT.'./source/plugin/nyasec/common.inc.php';
 define('CODE_INTERVAL', 60);
 define('CODE_LIFE', 5);
 
+// if failed straight 5 times, lock the account for 20min
+define('MAX_FAIL_TIMES', 5);
+define('FAIL_BAN_TIME', 20 * 60);
+
 function get_uid($username) {
 	loaducenter();
 	list($uid) = uc_get_user($username);
@@ -36,10 +40,24 @@ $data = C::t(TB)->fetch_all($uid)[$uid];
 if (!$data || !$data['key'])
 	exit_with('error', 'undefined key');
 
+$fail_count = $data['fail_count'];
+$ban_until = $data['fail_ban_until'];
+if (time() < $ban_until)
+	exit_with('error', 'failed too many times');
+
 $key = $data['key'];
 $tick = floor(time() / CODE_INTERVAL);
 for ($i = 0; $i < CODE_LIFE; $i ++)
-	if (make_code($key, $tick - $i) === $code)
+	if (make_code($key, $tick - $i) === $code) {
+		if ($fail_count > 0)
+			C::t(TB)->update($uid, array('fail_count' => 0));
 		exit_with('ok', user_login($uid));
+	}
 
+if (++ $fail_count > MAX_FAIL_TIMES) {
+	$ban_until = time() + FAIL_BAN_TIME;
+	$fail_count = 0;
+}
+C::t(TB)->update($uid, array('fail_count' => $fail_count, 'fail_ban_until' => $ban_until));
 exit_with('error', 'login failed');
+
