@@ -1,0 +1,34 @@
+<script>
+function makeLoginButton($) {
+	var form = $('form[name=login]'),
+		button = $('<button type="button" class="pn pnc nyasec"><strong>¿ÚÁîµÇÂ½</strong></button>'),
+		td = form.find('.rfm.mbw.bw0 td:first')
+	form.find('input[name=password]').parentsUntil('.rfm').find('label').text('ÃÜÂë/¿ÚÁî:')
+	td.find('button:not(.nyasec)').html('<strong>ÃÜÂëµÇÂ½</strong>')
+	button.appendTo(td)
+	button.click(function(e) {
+		$.post('plugin.php?id=nyasec:login', {
+			username: form.find('input[name=username]').val(),
+			code: form.find('input[name=password]').val(),
+		}, function(data) {
+			if (data.result === 'ok')
+				location.reload()
+			else
+				alert(data.message)
+		}, 'json')
+	})
+}
+if (!window.jqScript) {
+	var jqScript = document.createElement('script')
+	jqScript.src = '//cdn.bootcss.com/jquery/2.1.4/jquery.min.js'
+	jqScript.onload = function(e) {
+		makeLoginButton(jQuery.noConflict())
+	}
+	document.body.appendChild(jqScript)
+}
+else {
+	setTimeout(function() {
+		makeLoginButton(jQuery)
+	}, 10)
+}
+</script>

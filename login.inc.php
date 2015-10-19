@@ -30,9 +30,9 @@ function make_code($key, $tick) {
 	return substr($num % 1000000 + 1000000, -6);
 }
 
-$uid = isset($_GET['uid']) ? intval($_GET['uid']) :
-	(isset($_GET['username']) ? get_uid($_GET['username']) : 0);
-$code = isset($_GET['code']) ? $_GET['code'] : '';
+$uid = isset($_POST['uid']) ? intval($_POST['uid']) :
+	(isset($_POST['username']) ? get_uid($_POST['username']) : 0);
+$code = isset($_POST['code']) ? $_POST['code'] : '';
 if (!($uid > 0) || !$code)
 	exit_with('error', 'invalid access');
 
@@ -48,7 +48,7 @@ if (time() < $ban_until)
 $key = $data['key'];
 $tick = floor(time() / CODE_INTERVAL);
 for ($i = 0; $i < CODE_LIFE; $i ++)
-	if (make_code($key, $tick - $i) === $code) {
+	if (make_code($key, $tick - $i + 1) === $code) {
 		if ($fail_count > 0)
 			C::t(TB)->update($uid, array('fail_count' => 0));
 		exit_with('ok', user_login($uid));
