@@ -2,7 +2,9 @@
 
 require_once DISCUZ_ROOT.'./source/plugin/nyasec/common.inc.php';
 
-$table = DB::table(C::t(TB)->getTable());
+// don't use DB:table()
+// discuz will replace 'pre_' in runquery()
+$table = 'pre_'.C::t(TB)->getTable();
 
 $sql = <<<EOF
 
