@@ -2,8 +2,8 @@
 <root>
 	<item id="Title"><![CDATA[Discuz! Plugin]]></item>
 	<item id="Version"><![CDATA[X3.2]]></item>
-	<item id="Time"><![CDATA[2015-10-18 17:09]]></item>
-	<item id="From"><![CDATA[Discuz! Board (http://u.ofr.me/oxyflour/dz3/)]]></item>
+	<item id="Time"><![CDATA[2016-01-24 11:20]]></item>
+	<item id="From"><![CDATA[Discuz! Board (http://u.ofr.me/dz3/)]]></item>
 	<item id="Data">
 		<item id="plugin">
 			<item id="available"><![CDATA[1]]></item>
@@ -45,6 +45,44 @@
 			</item>
 		</item>
 		<item id="version"><![CDATA[X3.2]]></item>
+		<item id="var">
+			<item id="0">
+				<item id="displayorder"><![CDATA[0]]></item>
+				<item id="title"><![CDATA[UCPASS ÕËºÅ (accountsid)]]></item>
+				<item id="description"><![CDATA[]]></item>
+				<item id="variable"><![CDATA[accountsid]]></item>
+				<item id="type"><![CDATA[text]]></item>
+				<item id="value"><![CDATA[ccc31bfbd6b712dd2865dee6146073de]]></item>
+				<item id="extra"><![CDATA[]]></item>
+			</item>
+			<item id="1">
+				<item id="displayorder"><![CDATA[1]]></item>
+				<item id="title"><![CDATA[UCPASS ¿ÚÁî (token)]]></item>
+				<item id="description"><![CDATA[]]></item>
+				<item id="variable"><![CDATA[token]]></item>
+				<item id="type"><![CDATA[text]]></item>
+				<item id="value"><![CDATA[d3de8211a00468a25c8aee1a28011f29]]></item>
+				<item id="extra"><![CDATA[]]></item>
+			</item>
+			<item id="2">
+				<item id="displayorder"><![CDATA[2]]></item>
+				<item id="title"><![CDATA[UCPASS App ID]]></item>
+				<item id="description"><![CDATA[]]></item>
+				<item id="variable"><![CDATA[appid]]></item>
+				<item id="type"><![CDATA[text]]></item>
+				<item id="value"><![CDATA[424384ffa34b4e68bab22d95c16a3888]]></item>
+				<item id="extra"><![CDATA[]]></item>
+			</item>
+			<item id="3">
+				<item id="displayorder"><![CDATA[3]]></item>
+				<item id="title"><![CDATA[UCPASS App Template]]></item>
+				<item id="description"><![CDATA[]]></item>
+				<item id="variable"><![CDATA[tmplid]]></item>
+				<item id="type"><![CDATA[text]]></item>
+				<item id="value"><![CDATA[19959]]></item>
+				<item id="extra"><![CDATA[]]></item>
+			</item>
+		</item>
 		<item id="installfile"><![CDATA[install.php]]></item>
 		<item id="uninstallfile"><![CDATA[uninstall.php]]></item>
 	</item>

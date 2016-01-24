@@ -1,13 +1,36 @@
 <?php
 
 require_once DISCUZ_ROOT.'./source/plugin/nyasec/common.inc.php';
+require_once DISCUZ_ROOT.'./source/plugin/nyasec/lib/Ucpaas.class.php';
 
 define('REQUEST_INTERVAL', 3 * 60);
-define('REQUEST_EXPIRE', 24 * 60 * 60);
+define('REQUEST_EXPIRE', 10 * 60);
 
-function is_valid_phone_number($num) {
-	// TODO
-	return !!$num;
+function check_phone_number($num) {
+	if ($num)
+		$num = trim($num);
+	if (preg_match("/^[0-9]{11}$/", $num))
+		return $num;
+}
+
+function send_sms($num, $code) {
+	global $_G;
+	$config = $_G['cache']['plugin']['nyasec'];
+	if (!$config['accountsid'] ||
+		!$config['token'] ||
+		!$config['appid'] ||
+		!$config['tmplid'])
+		return -1;
+
+	$ucpass = new Ucpaas(array(
+		'accountsid' => $config['accountsid'],
+		'token' => $config['token'],
+	));
+
+	$params = " $code,10 ";
+	$sms = $ucpass->templateSMS($config['appid'], $num, $config['tmplid'], $params);
+	$result = json_decode($sms, true);
+	return $result['resp']['respCode'];
 }
 
 $uid = $_G['uid'];
@@ -16,8 +39,8 @@ if (!($uid > 0))
 
 $ac = $_GET['ac'];
 if ($ac === 'request') {
-	$phonenum = $_GET['phonenum'];
-	if (!is_valid_phone_number($phonenum))
+	$phonenum = check_phone_number($_GET['phonenum']);
+	if (!$phonenum)
 		exit_with('error', 'invalid phone number');
 
 	$data = C::t(TB)->fetch_all($uid)[$uid];
@@ -28,15 +51,20 @@ if ($ac === 'request') {
 
 	$last_request_time = $data['request_time'];
 	if (time() - $last_request_time < REQUEST_INTERVAL)
-		exit_with('error', 'please retry 3min later');
+		exit_with('error', 'retry later');
+
+	$request_code = substr(rand(0, 1e6) + 1e6, -6);
+	$status = send_sms($phonenum, $request_code);
+	if ($status === -1)
+		exit_with('error', 'server setup error');
+	if ($status !== '000000')
+		exit_with('error', 'send sms failed');
 
 	$data['key'] = bin2hex(openssl_random_pseudo_bytes(256));
-	$data['request_code'] = bin2hex(openssl_random_pseudo_bytes(32));
+	$data['request_code'] = $request_code;
 	$data['request_time'] = time();
 	C::t(TB)->update($uid, $data);
-
-	// TODO: send the code with phone
-	exit_with('ok', $data['request_code']);
+	exit_with('ok', $request_code);
 }
 
 else if ($ac === 'download') {
