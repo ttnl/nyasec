@@ -57,6 +57,9 @@ if ($ac === 'request') {
 	$status = send_sms($phonenum, $request_code);
 	if ($status === -1)
 		exit_with('error', 'server setup error');
+
+	C::t(LOG)->insert(array('uid' => $uid,
+		'action' => 'send sms', 'result' => 'status: '.$status));
 	if ($status !== '000000')
 		exit_with('error', 'send sms failed');
 
@@ -76,6 +79,8 @@ else if ($ac === 'download') {
 	$data['request_code'] = '';
 	C::t(TB)->update($uid, $data);
 
+	C::t(LOG)->insert(array('uid' => $uid,
+		'action' => 'download key', 'result' => 'ok'));
 	exit_with('ok', $data['key']);
 }
 
@@ -86,6 +91,9 @@ else if ($ac === 'check') {
 
 else if ($ac === 'cancel') {
 	C::t(TB)->delete($uid);
+
+	C::t(LOG)->insert(array('uid' => $uid,
+		'action' => 'remove key', 'result' => 'ok'));
 	exit_with('ok');
 }
 

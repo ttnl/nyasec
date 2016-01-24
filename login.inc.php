@@ -51,6 +51,8 @@ for ($i = 0; $i < CODE_LIFE; $i ++)
 	if (make_code($key, $tick - $i + 1) === $code) {
 		if ($fail_count > 0)
 			C::t(TB)->update($uid, array('fail_count' => 0));
+		C::t(LOG)->insert(array('uid' => $uid,
+			'action' => 'login', 'result' => 'ok'));
 		exit_with('ok', user_login($uid));
 	}
 
@@ -59,5 +61,7 @@ if (++ $fail_count > MAX_FAIL_TIMES) {
 	$fail_count = 0;
 }
 C::t(TB)->update($uid, array('fail_count' => $fail_count, 'fail_ban_until' => $ban_until));
+C::t(LOG)->insert(array('uid' => $uid,
+	'action' => 'login', 'result' => 'fail * '.$fail_count));
 exit_with('error', 'login failed');
 
