@@ -34,11 +34,11 @@ $uid = isset($_POST['uid']) ? intval($_POST['uid']) :
 	(isset($_POST['username']) ? get_uid($_POST['username']) : 0);
 $code = isset($_POST['code']) ? $_POST['code'] : '';
 if (!($uid > 0) || !$code)
-	exit_with('error', 'invalid access');
+	exit_with('error', 'invalid user or code');
 
 $data = C::t(TB)->fetch_all($uid)[$uid];
 if (!$data || !$data['key'])
-	exit_with('error', 'undefined key');
+	exit_with('error', 'invalid key');
 
 $fail_count = $data['fail_count'];
 $ban_until = $data['fail_ban_until'];

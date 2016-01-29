@@ -1,23 +1,57 @@
-<script>
+<!--
+	set reload="1" so that this script will be executed every time loaded
+	ref: http://www.bacysoft.cn/thread-75-1-1.html
+-->
+<script reload="1">
 function makeLoginButton($) {
+
+	function toastErrorMessage(msg) {
+		var msgHolder = td.find('.nyasec-msg-holder')
+		if (!msgHolder[0])
+			msgHolder = $('<span class="nyasec-msg-holder" style="color:red"></span>').appendTo(td)
+
+		if (msg === 'invalid user or code')
+			msg = '无效的用户或口令'
+		else if (msg === 'invalid key')
+			msg = '该用户未申请喵玉口令'
+		else if (msg === 'failed too many times')
+			msg = '登陆失败次数过多，请稍后再试'
+		else if (msg === 'login failed')
+			msg = '登陆失败'
+
+		msgHolder.text(msg)
+	}
+
 	var form = $('form[name=login]'),
 		button = $('<button type="button" class="pn pnc nyasec"><strong>口令登陆</strong></button>'),
 		td = form.find('.rfm.mbw.bw0 td:first')
+
 	form.find('input[name=password]').parentsUntil('.rfm').find('label').text('密码/口令:')
+
 	td.find('button:not(.nyasec)').html('<strong>密码登陆</strong>')
-	button.appendTo(td)
-	button.click(function(e) {
+
+	button.appendTo(td).click(function(e) {
+		var username = form.find('input[name=username]').val(),
+			code = form.find('input[name=password]').val()
+
+		if (!username || !code) {
+			toastErrorMessage('请填写用户名和口令')
+			return
+		}
+
+		button.attr('data-ori-html', button.html()).html('正在验证...')
 		$.post('plugin.php?id=nyasec:login', {
-			username: form.find('input[name=username]').val(),
-			code: form.find('input[name=password]').val(),
+			username: username,
+			code: code,
 		}, function(data) {
-			if (data.result === 'ok')
-				location.reload()
-			else
-				alert(data.message)
-		}, 'json')
+			data.result === 'ok' ? location.reload() : toastErrorMessage(data.message)
+		}, 'json').complete(function() {
+			button.html(button.attr('data-ori-html'))
+		})
 	})
 }
+
+// inject jquery at the end or Discuz would complain
 if (!window.jqScript) {
 	var jqScript = document.createElement('script')
 	jqScript.src = '//cdn.bootcss.com/jquery/2.1.4/jquery.min.js'
