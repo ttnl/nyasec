@@ -1,5 +1,4 @@
 # NyaSec
-security authentication plugin for discuz x3
+security authentication plugin for NyaGame.
 
-### todo
-* finish cellphone authentication
+todo : server
